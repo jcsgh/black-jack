@@ -604,23 +604,23 @@ function searchAndDisplay(e) {
 //     deck.appendChild(newCard)
 // })
 
-const DisplayCards = CARDS.filter(card => Number(card.value) <= Number(searchVal.value))
+// const DisplayCards = CARDS.filter(card => Number(card.value) <= Number(searchVal.value))
 
-const mapDeck = DisplayCards.map(deck => {
-    const newCard = document.createElement('img')
-        newCard.setAttribute('src', CARDS[j].image)
-        deck.appendChild(newCard)
-        console.log(typeof(CARDS[j].value), typeof(searchVal.value))
-})
-
-
-// for (let j = 0; j <= CARDS.length; j++) {
-//    if (Number(CARDS[j].value) >= Number(searchVal.value)) {
-//        const newCard = document.createElement('img')
+// const mapDeck = DisplayCards.map(deck => {
+//     const newCard = document.createElement('img')
 //         newCard.setAttribute('src', CARDS[j].image)
 //         deck.appendChild(newCard)
 //         console.log(typeof(CARDS[j].value), typeof(searchVal.value))
-//         }
+// })
+
+
+for (let j = 0; j <= CARDS.length; j++) {
+   if (Number(CARDS[j].value) >= Number(searchVal.value)) {
+       const newCard = document.createElement('img')
+        newCard.setAttribute('src', CARDS[j].image)
+        deck.appendChild(newCard)
+        console.log(typeof(CARDS[j].value), typeof(searchVal.value))
+        }
 //     }
 
 
