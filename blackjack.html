@@ -2,24 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-`equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cards</title>
+    <title>Blackjack</title>
 </head>
 <body>
-    <form>
-        <label for="card-search"></label>
-        <input id="card-search" type="text" name="search-term" />
-        <button id="search-btn">Search</button>
-    </form>
-    <button id="draw-card">Draw One</button>
-    <button id="pick-five">Draw Five</button>
-    <button id="show-all">Show All</button>
-    <button id="reset">Reset</button>
-    <div id="deck-of-cards"></div>
-</body>
-<script>
-    const CARDS =  [
+    <div><h1>Blackjack</h1></div>
+    <div id="dealer-score"></div>
+    <div id="idplayer-hand"></div>
+    <button id="hit">Hit</button>
+    <button id="stay">Stay</button>
+    <div id="gameResult"></div>
+    <script>
+        const CARDS =  [
 {
 "code": "5S",
 "image": "https://deckofcardsapi.com/static/img/5S.png",
@@ -542,114 +537,169 @@
 }
 ]
 
+function playGame() {
 
-const deck = document.getElementById('deck-of-cards')
-const showBtn  = document.getElementById('show-all')
-const singleDraw = document.getElementById('draw-card')
-const drawFive = document.getElementById('pick-five')
-const reset = document.getElementById('reset')
-const searchBtn = document.getElementById('search-btn')
-const searchVal = document.getElementById('card-search')
+        const dealerScore = document.getElementById('dealer-score')
+        const playerHand = document.getElementById('idplayer-hand')
+        const hitBtn = document.getElementById('hit')
+        const stayBtn = document.getElementById('stay')
+        const gameResult = document.getElementById('result')
 
-function showAll(){
-    CARDS.map(card => {
-    const newCard = document.createElement('img')
-    newCard.setAttribute('src', card.image)
-    deck.appendChild(newCard)
-})
-}
-/*
-Create Function - Draw & Show ONLY ONE card - at RANDOM
-*/
-function oneCard(){
-    let idx = Math.floor(Math.random()*CARDS.length)
+        let totalValue = 0;
+        let playerScore = 0;
+        let dealerScore2 = 0;
 
-    const newCard = document.createElement('img')
-    newCard.setAttribute('src', CARDS[idx].image)
-    deck.appendChild(newCard)
-}
-/*
+function stay() {
 
-Create Function - Draw & Show *FIVE* *RANDOM* Cards
-**BONUS** Display the Point Value
-*/ 
-function fiveCards() {
+    totalValue = 0;
 
-    for (let i = 0; i < 5; i++) {
-        let idx = Math.floor(Math.random()*CARDS.length)
-        const newCard = document.createElement('img')
-        newCard.setAttribute('src', CARDS[idx].image)
-        deck.appendChild(newCard) 
+    const randIdx1 = Math.floor(Math.random() * CARDS.length)
+    const randIdx2 = Math.floor(Math.random() * CARDS.length)
+    const newCard1 = CARDS[randIdx1]
+    const newCard2 = CARDS[randIdx2]
+
+    if (newCard1.value === "JACK" || newCard1.value === "QUEEN" || newCard1.value === "KING") {
+        totalValue += 10;
+    } else if (newCard1.value === "ACE") {
+        totalValue += 11;
+    } else {
+        totalValue += Number(newCard1.value)
     }
     
-
-}
-/*
-Create Function - Search & Display All Cards that are greater than OR equal to Search Input
-**BONUS** Display Suit & Value in a separate element
-*/
-function searchAndDisplay(e) {
-    e.preventDefault();
-    // when search button is clicked 
-    // create a new array that takes in values that are greater or equal to search input
-    // if value is jack, queen, or King 
-    // change to value of 10
-    // display that array as cards
-
-    const DisplayNumCards = CARDS.filter(card => card.value >= searchVal.value)
-    // const DisplayStrCards = CARDS.filter(card => String(card.value) === String(searchVal.value) )
-
-    DisplayNumCards.map(card => {
-        const newCard = document.createElement('img')
-        newCard.setAttribute('src', card.image)
-        deck.appendChild(newCard)
-        console.log(typeof(card.value), typeof(searchVal.value))
-    })
-
-    // DisplayStrCards.map(card => {
-    //     if (card.value === "JACK" || card.value === "QUEEN" || card.value === "KING") {
-            
-    //     }
-    //     const newCard = document.createElement('img')
-    //     newCard.setAttribute('src', card.image)
-    //     deck.appendChild(newCard)
-    //     console.log(typeof(card.value), typeof(searchVal.value))
-    // })
-
-
-
-// for (let j = 0; j <= CARDS.length; j++) {
-//    if (Number(CARDS[j].value) >= Number(searchVal.value)) {
-//        const newCard = document.createElement('img')
-//         newCard.setAttribute('src', CARDS[j].image)
-//         deck.appendChild(newCard)
-//         console.log(typeof(CARDS[j].value), typeof(searchVal.value))
-//         }
-//      }
-
-
-
-}
-
-
-
-/*
-Create Function - RESET! Clear the Card Display
-**HINT! RED WEDDING!**
-*/
-function clear() {
-
-    while(deck.firstChild){
-        deck.removeChild(deck.firstChild)
+    if(newCard2.value === "JACK" || newCard2.value === "QUEEN" || newCard2.value === "KING") {
+        totalValue += 10;
+    }  else if (newCard2.value === "ACE") {
+        totalValue += 11;
+    } else {
+        totalValue += Number(newCard2.value)
     }
 
+    playerScore = totalValue;
+
+    console.log(`The player's score is ${playerScore}`)
+
+    dealer();
+
+    if (playerScore > dealerScore2) {
+        console.log("Player wins")
+    } else if (dealerScore2 > playerScore) {
+        console.log("Dealer wins")
+    } else if (dealerScore2 === 21) {
+        console.log("Dealer wins")
+    } else {
+        stay()
+    }
+
+    playAgain()
+
 }
 
-showBtn.onclick = showAll;
-singleDraw.onclick = oneCard;
-drawFive.onclick = fiveCards;
-reset.onclick = clear;
-searchBtn.addEventListener('click', searchAndDisplay)
+function dealer() {
 
-</script>
+    totalValue = 0;
+
+    const randIdx1 = Math.floor(Math.random() * CARDS.length)
+    const randIdx2 = Math.floor(Math.random() * CARDS.length)
+    const newCard1 = CARDS[randIdx1]
+    const newCard2 = CARDS[randIdx2]
+
+    if (newCard1.value === "JACK" || newCard1.value === "QUEEN" || newCard1.value === "KING") {
+        totalValue += 10;
+    } else if (newCard1.value === "ACE") {
+        totalValue += 11;
+    } else {
+        totalValue += Number(newCard1.value)
+    }
+    
+    if(newCard2.value === "JACK" || newCard2.value === "QUEEN" || newCard2.value === "KING") {
+        totalValue += 10;
+    }  else if (newCard2.value === "ACE") {
+        totalValue += 11;
+    } else {
+        totalValue += Number(newCard2.value)
+    }
+
+   dealerScore2 = totalValue;
+
+   console.log(`The dealer's score is ${dealerScore2}`)
+ 
+
+}
+
+function hit() {
+
+    /*INSTRUCTIONS!
+    **CREATE FUNCTION HIT**
+        1. Draws One Card & Adds card value to the total value
+        2. If the total value is greater than 21 - display BUST
+        as the gameResult
+            If the player busts, 
+            1. HIDE the Hit/Stay buttons
+            2. Ask if they want to play again
+*/
+
+    totalValue = 0;
+
+    const randIdx = Math.floor(Math.random() * CARDS.length)
+
+    const newCard = CARDS[randIdx]
+
+    if (newCard.value === "JACK" || newCard.value === "QUEEN" || newCard.value === "KING") {
+        totalValue += 10;
+    } else if (newCard.value === "ACE") {
+        totalValue += 11;
+    } else {
+        totalValue += Number(newCard.value)
+    }
+
+    console.log(totalValue)
+
+    if (totalValue > 21) {
+        gameResult.textContent = "BUST!";
+        console.log("bust")
+        
+    } else if (totalValue === 21) {
+        gameResult.textContent = "WINNER!"
+        console.log("winner")
+    }
+    
+    CARDS = CARDS.filter(card => card.code !== newCard.code)
+
+    const playerCard = document.createElement('img')
+        playerCard.setAttribute('src', newCard.image)
+        deck.appendChild(playerCard) 
+    
+} 
+
+// asks if player would like to play again
+
+function playAgain() {
+    let playAgain = prompt("Would you like to play again?")
+    answer = playAgain.toLowerCase()
+
+    if (answer === "yes") {
+        alert("lets play again")
+        playGame()
+    } else if (answer === "no") {
+        alert("hope to see you next time")
+        hideBtns()
+        return;
+    } else {
+        alert("invalid answer. try again")
+        playAgain()
+    }
+}
+
+function hideBtns() {
+    document.getElementById("hit").style.display = "none";
+    document.getElementById("stay").style.display = "none";
+}
+
+hitBtn.onclick = hit;
+stayBtn.onclick = stay;
+
+}
+playGame()
+    </script>
+</body>
 </html>
