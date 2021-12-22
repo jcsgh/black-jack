@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style type="text/css">
+        .invisible{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>Dealer Hand</h2>
+    <div id="dealer-hand"></div>
+    <h2>Player Hand</h2>
+    <div id="player-hand"></div>
+        <button id="shuffle">Shuffle</button>
+        <button id="play-game">Play</button>
+        <button id="draw-card">Draw</button>
+        <button id="stay" class="invisible">Stay</button>
+        <button id="reset">Reset</button>
+    <div id="game-result"></div>
+    <script>
+        //Get Variables
+        //buttons
+        const shuffleBtn = document.getElementById('shuffle')
+        const resetBtn = document.getElementById('reset')
+        const stayBtn = document.getElementById('stay')
+        const playBtn = document.getElementById('play-game')
+        const drawBtn = document.getElementById('draw-card')
+
+        //hands
+        const playerHand = document.getElementById('player-hand')
+        const dealerHand = document.getElementById('dealer-hand')
+
+        //game result
+        const gameResult = document.getElementById('game-result')
+
+        //Other Variables
+
+        let deckId;
+        let playerValue = 0;
+        let houseValue = 0;
+        //Create Functions
+
+        function shuffle(){
+        //Shuffle Function
+            //Calls to Database
+            //Assigns DeckId to a variable
+            //Displays PLAY button -> turn on, not toggle
+
+            //* PATTERN *//
+            //fetch takes URL (endpoint) as a string
+            //THEN turn response => JSON => JAVASCRIPT OBJECT NOTATION
+            // fetch()
+            // .then(response => response.json())
+            // .then(data => console.log(data))
+            // .catch()
+
+            fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
+            .then(response => response.json())
+            .then(data => {
+                //assigned the deck_id in the JSON TO the deckId global variable
+                console.log(data.deck_id)
+                deckId = data.deck_id;
+            })
+            .catch(err=>console.log(err))
+        }
+
+        function playGame(){
+            //Play Game Function
+                //Calls to Database for specific deck
+                //Draws FOUR CARDS
+            fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=4`)
+            .then(response => response.json())
+            .then(data => {
+                //Deals FIRST TWO CARDS to the dealer, Deals LAST TWO CARDS to the player
+                // but only displays the first card for the Dealer
+                // & displays both cards for the Player
+                for(let i = 0; i < data.cards.length; i++){
+                    const card = document.createElement('img')
+                    card.setAttribute('src', data.cards[i].image)
+                    if(i === 0){
+                        dealerHand.appendChild(card)
+                        if (data.cards[i].value === "JACK" || data.cards[i].value === "QUEEN" || data.cards[i].value === "KING" || data.cards[i].value === "ACE") {
+                                houseValue = 10;
+                                console.log(houseValue)
+                        } else {
+                                houseValue = parseInt(data.cards[i].value);
+                                console.log(houseValue)
+                            }
+                    } else if(i === 1) {
+                        card.setAttribute('class', 'invisible')
+                        dealerHand.appendChild(card)
+                        if (data.cards[i].value === "JACK" || data.cards[i].value === "QUEEN" || data.cards[i].value === "KING" || data.cards[i].value === "ACE") {
+                                houseValue = parseInt(houseValue) + parseInt(10);
+                                console.log(houseValue)
+                    }   else {
+                                houseValue = parseInt(houseValue) + parseInt(data.cards[i].value);
+                                console.log(houseValue)
+                            }
+                    } else {
+                        playerHand.appendChild(card)
+                        if (data.cards[i].value === "JACK" || data.cards[i].value === "QUEEN" || data.cards[i].value === "KING" || data.cards[i].value === "ACE") {
+                            playerValue = parseInt(playerValue) + 10;
+                            console.log(playerValue)
+                    }   else {
+                         playerValue = parseInt(playerValue) + parseInt(data.cards[i].value);
+                         console.log(playerValue)
+                    }
+                    }
+                }
+
+                
+                
+                //Assigns playerValue & houseValue
+                
+            })
+            .catch(err=>console.log(err))
+                
+                //Toggles play-game & draw-card button off
+                //Toggles draw-card button & stay
+            //
+        }
+
+        
+
+        function drawCard() {
+
+            fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=1`)
+            .then(response => response.json())
+            .then(data => {
+                for(let i = 0; i < data.cards.length; i++){
+                    const card = document.createElement('img')
+                    card.setAttribute('src', data.cards[i].image)
+                    playerHand.appendChild(card)
+                    
+                    
+                    if (data.cards[i].value === "JACK" || data.cards[i].value === "QUEEN" || data.cards[i].value === "KING" || data.cards[i].value === "ACE") {
+                        playerValue = parseInt(playerValue) + parseInt(10);
+                        console.log(playerValue)
+                    } else {
+                        playerValue = parseInt(playerValue) + parseInt(data.cards[i].value);
+                        console.log(playerValue)
+                    }
+
+                    if(playerValue > 21){
+                        alert("You lose")
+                        playerValue = 0;
+                    }else if(playerValue === 21){
+                        alert("You win")
+                        playerValue = 0;
+                    }
+                }
+            })
+            .catch(err=>console.log(err))
+        }
+            //Draw Card Function
+                // Calls to Database for ONE CARD
+                // Displays Card
+                // Calculates new Player Value
+                    // if player value > 21 display lose message
+                        // ask if player wants to play again
+                        // toggle draw & stay OFF
+                        // toggle shuffle ON
+                    // if player value === 21 => display win message
+                        // ask if player wants to play again
+                        // toggle draw & stay OFF
+                        // toggle shuffle ON
+
+
+            //Stay Function
+                //**STRETCH** Continue to draw & calculate for the dealer, as long as the dealer hand is < 21
+
+                //MVP:
+                    //Compare dealer hand against player hand
+                    // if dealer hand > player hand => dealer wins
+                    // if player hand === 21 and dealer hand DOES NOT === 21 => player wins
+                    // if dealer hand === 21 and dealer only has two cards => dealer wins
+                    // if player hand > dealer hand => player wins
+
+                    // ask if player wants to play again
+                        // toggle draw & stay OFF
+                        // toggle shuffle ON
+                
+        function reset() {
+            while(dealerHand.firstchild) {
+                dealerHand.remove(dealerHand.firstChild)
+            }
+            while(playerHand.firstchild) {
+                playerHand.remove(playerHand.firstChild)
+            }
+        }
+
+        //Attach Functions to Buttons
+        shuffleBtn.addEventListener('click', shuffle)
+        resetBtn.addEventListener('click', reset)
+        playBtn.addEventListener('click', playGame)
+        drawBtn.addEventListener('click', drawCard)
+    </script>
+</body>
+</html>
